@@ -233,8 +233,21 @@ export default function Home() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isWrong, setIsWrong] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
+  const [showScorePop, setShowScorePop] = useState(false);
+  const [earnedPoints, setEarnedPoints] = useState(0);
   
   const { playCorrect, playWrong, playPokemonCaught } = useSoundEffects();
+
+  // Pastel colors for answer buttons
+  const buttonColors = ['answer-btn-pink', 'answer-btn-blue', 'answer-btn-green', 'answer-btn-yellow'];
+
+  // Get next uncollected Pokemon for preview
+  const getNextPokemon = () => {
+    const uncollected = POKEMON_LIST.filter(
+      p => !collectedPokemon.some(cp => cp.id === p.id)
+    );
+    return uncollected.length > 0 ? uncollected[0] : null;
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('pokemon-math-save-v2');
@@ -273,10 +286,16 @@ export default function Home() {
     if (answer === problem.answer) {
       playCorrect();
       setCorrectAnswer(answer);
-      const newScore = score + (10 * difficulty);
+      const points = 10 * difficulty;
+      const newScore = score + points;
       const newStreak = streak + 1;
       setScore(newScore);
       setStreak(newStreak);
+      
+      // Trigger score pop animation
+      setEarnedPoints(points);
+      setShowScorePop(true);
+      setTimeout(() => setShowScorePop(false), 1000);
       
       if (newStreak > 0 && newStreak % 3 === 0) {
         const uncollected = POKEMON_LIST.filter(
@@ -514,41 +533,72 @@ export default function Home() {
   ];
   const encouragement = encouragements[streak % encouragements.length];
 
+  const nextPokemon = getNextPokemon();
+  const progressPercent = ((streak % 3) / 3) * 100;
+  const streakSize = Math.min(24 + streak * 2, 40); // Grows with streak, max 40px
+
   return (
-    <div className="min-h-screen flex flex-col p-4 safe-area-top safe-area-bottom">
+    <div className="min-h-screen flex flex-col p-4 safe-area-top safe-area-bottom relative">
+      {/* Background decorations */}
+      <div className="bg-decorations" />
+      
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 relative z-10">
         <button
           onClick={() => setGameState('menu')}
           className="py-2 px-4 bg-white/70 rounded-xl text-amber-800 font-bold text-lg"
         >
           ← Menu
         </button>
-        <div className="flex items-center gap-6">
-          <span className="text-xl font-bold text-amber-800 flex items-center gap-1">
+        <div className="flex items-center gap-4">
+          <span className="text-xl font-bold text-amber-800 flex items-center gap-1 relative">
             <StarIcon size={24} /> {score}
+            {/* Score pop animation */}
+            {showScorePop && (
+              <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-green-500 font-bold text-lg animate-score-pop">
+                +{earnedPoints}
+              </span>
+            )}
           </span>
-          <span className="text-xl font-bold text-amber-800 flex items-center gap-1">
-            <FireIcon size={24} /> {streak}
+          <span className={`streak-flame ${streak >= 5 ? 'streak-hot' : ''}`} style={{ fontSize: `${streakSize}px` }}>
+            <FireIcon size={streakSize} />
+            <span className="text-amber-800 font-bold" style={{ fontSize: `${Math.min(20 + streak, 28)}px` }}>
+              {streak}
+            </span>
           </span>
         </div>
       </div>
       
-      {/* Progress to next Pokemon */}
-      <div className="mb-6">
-        <div className="flex items-center justify-center gap-3">
-          <span className="text-base text-amber-700 font-medium">Next Pokemon:</span>
-          {[0, 1, 2].map((i) => (
-            <span key={i} className={i < (streak % 3) ? 'opacity-100' : 'opacity-30'}>
-              <StarIcon size={28} filled={i < (streak % 3)} />
-            </span>
-          ))}
+      {/* Progress bar with Pokemon preview */}
+      <div className="mb-4 relative z-10">
+        <div className="flex items-center gap-3 justify-center">
+          <span className="text-sm text-amber-700 font-medium">Next:</span>
+          <div className="flex-1 max-w-[200px]">
+            <div className="progress-bar-container">
+              <div 
+                className="progress-bar-fill" 
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+          {nextPokemon ? (
+            <Image
+              src={getSpriteUrl(nextPokemon.id)}
+              alt="Next Pokemon"
+              width={36}
+              height={36}
+              className="pokemon-silhouette"
+              unoptimized
+            />
+          ) : (
+            <span className="text-2xl">🏆</span>
+          )}
         </div>
       </div>
       
       {/* Problem - flex-1 centered as cohesive unit */}
       {problem && (
-        <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center relative z-10">
           <div className="flex flex-col items-center gap-6 w-full max-w-sm px-2">
             {/* Problem card with more presence */}
             <div className={`problem-card bg-white rounded-3xl shadow-2xl px-8 py-8 w-full ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
@@ -557,7 +607,7 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Answer Choices - Full width buttons */}
+            {/* Answer Choices - Colorful pastel buttons */}
             <div className="grid grid-cols-2 gap-4 w-full">
               {choices.map((choice, i) => {
                 const isSelected = selectedAnswer === choice;
@@ -573,10 +623,10 @@ export default function Home() {
                     disabled={selectedAnswer !== null}
                     className={`w-full py-6 text-4xl font-bold rounded-2xl shadow-lg transition-all ${
                       showCorrect
-                        ? 'bg-green-400 text-white'
+                        ? 'bg-green-400 text-white border-green-500'
                         : showWrong
-                        ? 'bg-red-400 text-white'
-                        : 'bg-white text-gray-800 hover:bg-amber-100 active:scale-95'
+                        ? 'bg-red-400 text-white border-red-500'
+                        : `${buttonColors[i]} text-gray-700 active:scale-95`
                     } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
                   >
                     {choice}
