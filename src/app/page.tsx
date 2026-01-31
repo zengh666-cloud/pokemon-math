@@ -321,7 +321,7 @@ export default function Home() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 safe-area-top safe-area-bottom">
         {/* Main card container - centered cohesive unit */}
-        <div className="w-full max-w-sm bg-white/60 backdrop-blur-sm rounded-3xl shadow-2xl p-6 space-y-6">
+        <div className="w-full max-w-sm bg-white/95 rounded-3xl shadow-2xl p-6 space-y-5 border-2 border-amber-200/50">
           {/* Title section */}
           <div className="text-center">
             <h1 className="text-3xl font-bold text-amber-800 mb-2 animate-bounce-slow flex items-center justify-center gap-2">
@@ -331,7 +331,7 @@ export default function Home() {
           </div>
           
           {/* Pokemon showcase - bigger sprites */}
-          <div className="flex justify-center gap-3 animate-float py-4 bg-gradient-to-r from-amber-100/50 to-yellow-100/50 rounded-2xl">
+          <div className="flex justify-center gap-2 animate-float py-3 bg-gradient-to-r from-amber-200/70 to-yellow-200/70 rounded-2xl shadow-inner">
             {[25, 4, 7, 1].map((id, i) => (
               <Image
                 key={id}
@@ -546,63 +546,65 @@ export default function Home() {
         </div>
       </div>
       
-      {/* Problem - flex-1 to expand and fill space */}
+      {/* Problem - flex-1 centered as cohesive unit */}
       {problem && (
-        <div className="flex-1 flex flex-col items-center justify-between py-4">
-          {/* Problem card with more presence */}
-          <div className={`problem-card bg-white rounded-3xl shadow-2xl px-10 py-12 ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
-            <div className="text-6xl sm:text-7xl font-bold text-center text-gray-800">
-              {problem.num1} {problem.operator} {problem.num2} = ?
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center gap-6 w-full max-w-sm px-2">
+            {/* Problem card with more presence */}
+            <div className={`problem-card bg-white rounded-3xl shadow-2xl px-8 py-8 w-full ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
+              <div className="text-5xl sm:text-6xl font-bold text-center text-gray-800">
+                {problem.num1} {problem.operator} {problem.num2} = ?
+              </div>
             </div>
-          </div>
-          
-          {/* Answer Choices - Bigger, full width buttons */}
-          <div className="grid grid-cols-2 gap-5 w-full max-w-sm mt-8">
-            {choices.map((choice, i) => {
-              const isSelected = selectedAnswer === choice;
-              const isCorrectAnswer = choice === problem.answer;
-              const showCorrect = selectedAnswer !== null && isCorrectAnswer;
-              const showWrong = isSelected && !isCorrectAnswer;
-              const isCorrectPop = correctAnswer === choice;
-              
-              return (
-                <button
-                  key={i}
-                  onClick={() => checkAnswer(choice)}
-                  disabled={selectedAnswer !== null}
-                  className={`w-full py-8 text-5xl font-bold rounded-2xl shadow-lg transition-all ${
-                    showCorrect
-                      ? 'bg-green-400 text-white'
-                      : showWrong
-                      ? 'bg-red-400 text-white'
-                      : 'bg-white text-gray-800 hover:bg-amber-100 active:scale-95'
-                  } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
-                >
-                  {choice}
-                </button>
-              );
-            })}
-          </div>
-          
-          {/* Fun element below answers */}
-          <div className="flex flex-col items-center gap-2 mt-8">
-            {gameState === 'correct' ? (
-              <div className="text-3xl animate-pop flex items-center gap-2">
-                <PartyIcon size={36} /> Great job! <PartyIcon size={36} />
-              </div>
-            ) : (
-              <div className="flex items-center gap-4 bg-white/60 rounded-2xl px-8 py-4 shadow-md">
-                <Image
-                  src={getSpriteUrl(25)}
-                  alt="Pikachu cheering"
-                  width={56}
-                  height={56}
-                  className="animate-bounce-slow"
-                  unoptimized
-                />
-                <span className="text-xl text-amber-700 font-bold">{encouragement}</span>
-              </div>
-            )}
+            
+            {/* Answer Choices - Full width buttons */}
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {choices.map((choice, i) => {
+                const isSelected = selectedAnswer === choice;
+                const isCorrectAnswer = choice === problem.answer;
+                const showCorrect = selectedAnswer !== null && isCorrectAnswer;
+                const showWrong = isSelected && !isCorrectAnswer;
+                const isCorrectPop = correctAnswer === choice;
+                
+                return (
+                  <button
+                    key={i}
+                    onClick={() => checkAnswer(choice)}
+                    disabled={selectedAnswer !== null}
+                    className={`w-full py-6 text-4xl font-bold rounded-2xl shadow-lg transition-all ${
+                      showCorrect
+                        ? 'bg-green-400 text-white'
+                        : showWrong
+                        ? 'bg-red-400 text-white'
+                        : 'bg-white text-gray-800 hover:bg-amber-100 active:scale-95'
+                    } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
+                  >
+                    {choice}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Fun element below answers */}
+            <div className="flex flex-col items-center">
+              {gameState === 'correct' ? (
+                <div className="text-2xl animate-pop flex items-center gap-2">
+                  <PartyIcon size={32} /> Great job! <PartyIcon size={32} />
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 bg-white/60 rounded-2xl px-5 py-3 shadow-md">
+                  <Image
+                    src={getSpriteUrl(25)}
+                    alt="Pikachu cheering"
+                    width={48}
+                    height={48}
+                    className="animate-bounce-slow"
+                    unoptimized
+                  />
+                  <span className="text-lg text-amber-700 font-bold">{encouragement}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
