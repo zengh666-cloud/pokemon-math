@@ -44,8 +44,9 @@ input, select, textarea {
 }
 
 @keyframes wiggle {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+  20%, 40%, 60%, 80% { transform: translateX(8px); }
 }
 
 @keyframes pop {
@@ -92,6 +93,32 @@ input, select, textarea {
 
 .animate-celebrate {
   animation: celebrate 0.6s ease-out forwards;
+}
+
+/* Correct answer pop animation with green flash */
+@keyframes correct-pop {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% { 
+    transform: scale(1.15); 
+    box-shadow: 0 0 20px 10px rgba(34, 197, 94, 0.4);
+  }
+  100% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.animate-correct-pop {
+  animation: correct-pop 0.4s ease-out forwards;
+}
+
+/* Pokemon silhouette for uncollected */
+.pokemon-silhouette {
+  filter: brightness(0) saturate(100%);
+  opacity: 0.3;
 }
 
 /* Safe area for iPhone notch */

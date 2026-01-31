@@ -1,7 +1,62 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+
+// Sound effects using Web Audio API
+function useSoundEffects() {
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  const getAudioContext = useCallback(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    }
+    return audioContextRef.current;
+  }, []);
+
+  const playTone = useCallback((frequency: number, duration: number, type: OscillatorType = 'sine', volume = 0.3) => {
+    try {
+      const ctx = getAudioContext();
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.frequency.value = frequency;
+      oscillator.type = type;
+      gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+      
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + duration);
+    } catch (e) {
+      console.log('Audio not available:', e);
+    }
+  }, [getAudioContext]);
+
+  const playCorrect = useCallback(() => {
+    // Happy high-pitched ding
+    playTone(880, 0.15, 'sine', 0.3);
+  }, [playTone]);
+
+  const playWrong = useCallback(() => {
+    // Low buzz
+    playTone(150, 0.3, 'sawtooth', 0.2);
+  }, [playTone]);
+
+  const playPokemonCaught = useCallback(() => {
+    // Triumphant jingle - 3 ascending notes
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    
+    [523, 659, 784].forEach((freq, i) => {
+      setTimeout(() => playTone(freq, 0.25, 'sine', 0.3), i * 150);
+    });
+  }, [getAudioContext, playTone]);
+
+  return { playCorrect, playWrong, playPokemonCaught };
+}
 
 // Real Gen 1 Pokemon with PokeAPI sprites
 const POKEMON_LIST = [
@@ -177,6 +232,9 @@ export default function Home() {
   const [difficulty, setDifficulty] = useState(1);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isWrong, setIsWrong] = useState(false);
+  const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
+  
+  const { playCorrect, playWrong, playPokemonCaught } = useSoundEffects();
 
   useEffect(() => {
     const saved = localStorage.getItem('pokemon-math-save-v2');
@@ -213,6 +271,8 @@ export default function Home() {
     setSelectedAnswer(answer);
     
     if (answer === problem.answer) {
+      playCorrect();
+      setCorrectAnswer(answer);
       const newScore = score + (10 * difficulty);
       const newStreak = streak + 1;
       setScore(newScore);
@@ -227,14 +287,21 @@ export default function Home() {
           const randomPokemon = uncollected[Math.floor(Math.random() * uncollected.length)];
           setNewPokemon(randomPokemon);
           setCollectedPokemon([...collectedPokemon, randomPokemon]);
-          setTimeout(() => setGameState('newPokemon'), 800);
+          setTimeout(() => {
+            playPokemonCaught();
+            setGameState('newPokemon');
+          }, 800);
           return;
         }
       }
       
       setGameState('correct');
-      setTimeout(() => startGame(), 1000);
+      setTimeout(() => {
+        setCorrectAnswer(null);
+        startGame();
+      }, 1000);
     } else {
+      playWrong();
       setIsWrong(true);
       setStreak(0);
       setTimeout(() => {
@@ -293,19 +360,26 @@ export default function Home() {
           <div className="bg-white/50 rounded-2xl p-4">
             <p className="text-amber-800 font-bold mb-2">Difficulty:</p>
             <div className="flex gap-2">
-              {[1, 2, 3].map((d) => (
+              {[
+                { level: 1, label: 'Easy', desc: 'Numbers 1-5' },
+                { level: 2, label: 'Medium', desc: 'Numbers 1-10' },
+                { level: 3, label: 'Hard', desc: 'Numbers 1-20' },
+              ].map(({ level, label }) => (
                 <button
-                  key={d}
-                  onClick={() => setDifficulty(d)}
-                  className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-1 ${
-                    difficulty === d
+                  key={level}
+                  onClick={() => setDifficulty(level)}
+                  className={`flex-1 py-3 rounded-xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 ${
+                    difficulty === level
                       ? 'bg-amber-500 text-white scale-105'
                       : 'bg-white text-amber-700 hover:bg-amber-100'
                   }`}
                 >
-                  {Array.from({ length: d }).map((_, i) => (
-                    <StarIcon key={i} size={20} filled={difficulty === d} />
-                  ))}
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: level }).map((_, i) => (
+                      <StarIcon key={i} size={16} filled={difficulty === level} />
+                    ))}
+                  </div>
+                  <span className="text-xs">{label}</span>
                 </button>
               ))}
             </div>
@@ -350,22 +424,18 @@ export default function Home() {
                 className={`aspect-square rounded-2xl flex flex-col items-center justify-center p-2 transition-all ${
                   collected
                     ? 'bg-white shadow-lg'
-                    : 'bg-gray-300/50'
+                    : 'bg-gray-200/70'
                 }`}
                 style={collected ? { backgroundColor: pokemon.color + '40' } : {}}
               >
-                {collected ? (
-                  <Image
-                    src={getSpriteUrl(pokemon.id)}
-                    alt={pokemon.name}
-                    width={64}
-                    height={64}
-                    className="drop-shadow-md"
-                    unoptimized
-                  />
-                ) : (
-                  <QuestionIcon size={48} />
-                )}
+                <Image
+                  src={getSpriteUrl(pokemon.id)}
+                  alt={collected ? pokemon.name : '???'}
+                  width={64}
+                  height={64}
+                  className={collected ? 'drop-shadow-md' : 'pokemon-silhouette'}
+                  unoptimized
+                />
                 <span className={`text-xs font-bold mt-1 ${collected ? 'text-gray-700' : 'text-gray-400'}`}>
                   {collected ? pokemon.name : '???'}
                 </span>
@@ -474,6 +544,7 @@ export default function Home() {
               const isCorrectAnswer = choice === problem.answer;
               const showCorrect = selectedAnswer !== null && isCorrectAnswer;
               const showWrong = isSelected && !isCorrectAnswer;
+              const isCorrectPop = correctAnswer === choice;
               
               return (
                 <button
@@ -482,11 +553,11 @@ export default function Home() {
                   disabled={selectedAnswer !== null}
                   className={`py-6 text-4xl font-bold rounded-2xl shadow-lg transition-all ${
                     showCorrect
-                      ? 'bg-green-400 text-white scale-105'
+                      ? 'bg-green-400 text-white'
                       : showWrong
                       ? 'bg-red-400 text-white'
                       : 'bg-white text-gray-800 hover:bg-amber-100 active:scale-95'
-                  }`}
+                  } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
                 >
                   {choice}
                 </button>
