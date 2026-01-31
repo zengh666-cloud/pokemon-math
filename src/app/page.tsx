@@ -338,91 +338,75 @@ export default function Home() {
   // Menu Screen
   if (gameState === 'menu') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 safe-area-top safe-area-bottom">
-        {/* Main card container - centered cohesive unit */}
-        <div className="w-full max-w-sm bg-white/95 rounded-3xl shadow-2xl p-6 space-y-5 border-2 border-amber-200/50">
-          {/* Title section */}
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-amber-800 mb-2 animate-bounce-slow flex items-center justify-center gap-2">
-              <CalculatorIcon size={36} /> Math Quest! <GamepadIcon size={36} />
-            </h1>
-            <p className="text-lg text-amber-700">Catch Pokemon by solving math!</p>
-          </div>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 safe-area-top safe-area-bottom">
+        {/* Title */}
+        <h1 className="text-4xl font-bold text-amber-800 mb-2">Math Quest!</h1>
+        <p className="text-amber-600 mb-8">Catch Pokemon by solving math</p>
+        
+        {/* Pokemon showcase */}
+        <div className="flex justify-center gap-4 mb-10">
+          {[25, 4, 7, 1].map((id) => (
+            <Image
+              key={id}
+              src={getSpriteUrl(id)}
+              alt="Pokemon"
+              width={56}
+              height={56}
+              unoptimized
+            />
+          ))}
+        </div>
+        
+        {/* Main actions */}
+        <div className="w-full max-w-xs space-y-3 mb-10">
+          <button
+            onClick={startGame}
+            className="w-full h-14 bg-green-500 text-white text-xl font-bold rounded-2xl shadow-lg active:scale-95 transition-transform"
+          >
+            ▶ Play
+          </button>
           
-          {/* Pokemon showcase - bigger sprites */}
-          <div className="flex justify-center gap-2 animate-float py-3 bg-gradient-to-r from-amber-200/70 to-yellow-200/70 rounded-2xl shadow-inner">
-            {[25, 4, 7, 1].map((id, i) => (
-              <Image
-                key={id}
-                src={getSpriteUrl(id)}
-                alt="Pokemon"
-                width={96}
-                height={96}
-                className="drop-shadow-lg hover:scale-110 transition-transform"
-                style={{ animationDelay: `${i * 0.2}s` }}
-                unoptimized
-              />
+          <button
+            onClick={() => setGameState('collection')}
+            className="w-full h-12 bg-purple-500 text-white text-lg font-semibold rounded-2xl shadow-md active:scale-95 transition-transform"
+          >
+            My Pokemon ({collectedPokemon.length}/{POKEMON_LIST.length})
+          </button>
+        </div>
+        
+        {/* Difficulty selector */}
+        <div className="w-full max-w-xs mb-8">
+          <p className="text-amber-700 font-semibold text-center mb-3">Difficulty</p>
+          <div className="flex gap-2">
+            {[
+              { level: 1, label: 'Easy' },
+              { level: 2, label: 'Medium' },
+              { level: 3, label: 'Hard' },
+            ].map(({ level, label }) => (
+              <button
+                key={level}
+                onClick={() => setDifficulty(level)}
+                className={`flex-1 h-12 rounded-xl font-semibold text-sm transition-all ${
+                  difficulty === level
+                    ? 'bg-amber-500 text-white shadow-md'
+                    : 'bg-white/80 text-amber-700'
+                }`}
+              >
+                {label}
+              </button>
             ))}
           </div>
-          
-          {/* Action buttons */}
-          <div className="space-y-4">
-            <button
-              onClick={startGame}
-              className="w-full py-5 px-8 bg-gradient-to-r from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
-            >
-              <PlayIcon size={28} /> Play!
-            </button>
-            
-            <button
-              onClick={() => setGameState('collection')}
-              className="w-full py-4 px-8 bg-gradient-to-r from-purple-400 to-purple-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
-            >
-              <BackpackIcon size={24} /> My Pokemon ({collectedPokemon.length}/{POKEMON_LIST.length})
-            </button>
-          </div>
-          
-          {/* Difficulty selector */}
-          <div className="bg-white/70 rounded-2xl p-4">
-            <p className="text-amber-800 font-bold mb-3 text-center">Difficulty:</p>
-            <div className="flex gap-2">
-              {[
-                { level: 1, label: 'Easy', desc: 'Numbers 1-5' },
-                { level: 2, label: 'Medium', desc: 'Numbers 1-10' },
-                { level: 3, label: 'Hard', desc: 'Numbers 1-20' },
-              ].map(({ level, label }) => (
-                <button
-                  key={level}
-                  onClick={() => setDifficulty(level)}
-                  className={`flex-1 py-3 rounded-xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 ${
-                    difficulty === level
-                      ? 'bg-amber-500 text-white scale-105 shadow-md'
-                      : 'bg-white text-amber-700 hover:bg-amber-100'
-                  }`}
-                >
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: level }).map((_, i) => (
-                      <StarIcon key={i} size={16} filled={difficulty === level} />
-                    ))}
-                  </div>
-                  <span className="text-xs">{label}</span>
-                </button>
-              ))}
-            </div>
-            <p className="text-sm text-amber-600 mt-3 text-center">
-              {difficulty === 1 && 'Numbers 1-5'}
-              {difficulty === 2 && 'Numbers 1-10, with subtraction!'}
-              {difficulty === 3 && 'Numbers 1-20, challenge mode!'}
-            </p>
-          </div>
-          
-          {/* Score display */}
-          {score > 0 && (
-            <p className="text-amber-700 font-bold flex items-center justify-center gap-2 text-lg">
-              <StarIcon size={24} /> Total Stars: {score}
-            </p>
-          )}
+          <p className="text-sm text-amber-600 text-center mt-2">
+            {difficulty === 1 && 'Numbers 1-5'}
+            {difficulty === 2 && 'Numbers 1-10'}
+            {difficulty === 3 && 'Numbers 1-20'}
+          </p>
         </div>
+        
+        {/* Score */}
+        {score > 0 && (
+          <p className="text-amber-700 font-semibold">⭐ {score} stars</p>
+        )}
       </div>
     );
   }
@@ -430,54 +414,56 @@ export default function Home() {
   // Collection Screen
   if (gameState === 'collection') {
     return (
-      <div className="min-h-screen p-6 safe-area-top safe-area-bottom">
-        <div className="flex items-center justify-between mb-6">
+      <div className="min-h-screen flex flex-col safe-area-top safe-area-bottom">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-4">
           <button
             onClick={() => setGameState('menu')}
-            className="py-2 px-4 bg-white/70 rounded-xl text-amber-800 font-bold"
+            className="w-12 h-12 flex items-center justify-center bg-white/80 rounded-full text-amber-800 font-bold text-xl shadow-md active:scale-95"
           >
-            ← Back
+            ←
           </button>
-          <h2 className="text-2xl font-bold text-amber-800">My Pokemon!</h2>
-          <div className="w-16"></div>
+          <h2 className="text-xl font-bold text-amber-800">My Pokemon</h2>
+          <div className="w-12" />
         </div>
         
-        <div className="grid grid-cols-3 gap-3">
-          {POKEMON_LIST.map((pokemon) => {
-            const collected = collectedPokemon.some(p => p.id === pokemon.id);
-            return (
-              <div
-                key={pokemon.id}
-                className={`aspect-square rounded-2xl flex flex-col items-center justify-center p-2 transition-all ${
-                  collected
-                    ? 'bg-white shadow-lg'
-                    : 'bg-gray-200/70'
-                }`}
-                style={collected ? { backgroundColor: pokemon.color + '40' } : {}}
-              >
-                <Image
-                  src={getSpriteUrl(pokemon.id)}
-                  alt={collected ? pokemon.name : '???'}
-                  width={64}
-                  height={64}
-                  className={collected ? 'drop-shadow-md' : 'pokemon-silhouette'}
-                  unoptimized
-                />
-                <span className={`text-xs font-bold mt-1 ${collected ? 'text-gray-700' : 'text-gray-400'}`}>
-                  {collected ? pokemon.name : '???'}
-                </span>
-              </div>
-            );
-          })}
+        {/* Pokemon grid */}
+        <div className="flex-1 px-4 overflow-auto">
+          <div className="grid grid-cols-3 gap-3">
+            {POKEMON_LIST.map((pokemon) => {
+              const collected = collectedPokemon.some(p => p.id === pokemon.id);
+              return (
+                <div
+                  key={pokemon.id}
+                  className={`aspect-square rounded-2xl flex flex-col items-center justify-center p-2 ${
+                    collected ? 'bg-white shadow-md' : 'bg-white/40'
+                  }`}
+                >
+                  <Image
+                    src={getSpriteUrl(pokemon.id)}
+                    alt={collected ? pokemon.name : '???'}
+                    width={56}
+                    height={56}
+                    className={collected ? '' : 'opacity-20 grayscale'}
+                    unoptimized
+                  />
+                  <span className={`text-xs font-semibold mt-1 ${collected ? 'text-gray-700' : 'text-gray-400'}`}>
+                    {collected ? pokemon.name : '???'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
         
-        <div className="mt-6 text-center">
-          <p className="text-amber-800 font-bold text-lg">
-            {collectedPokemon.length} / {POKEMON_LIST.length} Pokemon caught!
+        {/* Footer */}
+        <div className="px-4 py-4 text-center">
+          <p className="text-amber-700 font-semibold">
+            {collectedPokemon.length} / {POKEMON_LIST.length} caught
           </p>
           {collectedPokemon.length === POKEMON_LIST.length && (
-            <p className="text-2xl mt-2 animate-sparkle flex items-center justify-center gap-2">
-              <TrophyIcon size={32} /> You caught them all! <TrophyIcon size={32} />
+            <p className="text-lg mt-2 text-amber-600">
+              🏆 You caught them all! 🏆
             </p>
           )}
         </div>
