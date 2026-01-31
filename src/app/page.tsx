@@ -494,17 +494,17 @@ export default function Home() {
             <PartyIcon size={32} /> New Pokemon! <PartyIcon size={32} />
           </h2>
           
-          {/* Pokemon showcase - bigger sprite, smaller circle ratio */}
+          {/* Pokemon showcase - bigger sprite in circle */}
           <div
-            className="w-48 h-48 rounded-full flex items-center justify-center mx-auto mb-6 animate-celebrate shadow-2xl border-4 border-white/50"
+            className="w-36 h-36 rounded-full flex items-center justify-center mx-auto mb-6 animate-celebrate shadow-2xl border-4 border-white/50 overflow-hidden"
             style={{ backgroundColor: newPokemon.color }}
           >
             <Image
               src={getSpriteUrl(newPokemon.id)}
               alt={newPokemon.name}
-              width={160}
-              height={160}
-              className="drop-shadow-lg scale-150"
+              width={96}
+              height={96}
+              className="drop-shadow-lg scale-125"
               unoptimized
             />
           </div>
@@ -572,9 +572,9 @@ export default function Home() {
       
       {/* Progress bar with Pokemon preview */}
       <div className="mb-4 relative z-10">
-        <div className="flex items-center gap-3 justify-center">
+        <div className="flex items-center gap-3 justify-center mx-auto">
           <span className="text-sm text-amber-700 font-medium">Next:</span>
-          <div className="flex-1 max-w-[200px]">
+          <div className="w-[180px]">
             <div className="progress-bar-container">
               <div 
                 className="progress-bar-fill" 
