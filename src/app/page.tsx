@@ -319,49 +319,53 @@ export default function Home() {
   // Menu Screen
   if (gameState === 'menu') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-between p-6 py-12 safe-area-top safe-area-bottom">
-        {/* Top section - Title */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-amber-800 mb-3 animate-bounce-slow flex items-center justify-center gap-2">
-            <CalculatorIcon size={40} /> Math Quest! <GamepadIcon size={40} />
-          </h1>
-          <p className="text-xl text-amber-700">Catch Pokemon by solving math!</p>
-        </div>
-        
-        {/* Middle section - Pokemon parade */}
-        <div className="flex gap-4 animate-float py-8">
-          {[25, 4, 7, 1].map((id, i) => (
-            <Image
-              key={id}
-              src={getSpriteUrl(id)}
-              alt="Pokemon"
-              width={72}
-              height={72}
-              className="drop-shadow-lg"
-              style={{ animationDelay: `${i * 0.2}s` }}
-              unoptimized
-            />
-          ))}
-        </div>
-        
-        {/* Bottom section - Buttons */}
-        <div className="w-full max-w-xs space-y-5">
-          <button
-            onClick={startGame}
-            className="w-full py-6 px-8 bg-gradient-to-r from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
-          >
-            <PlayIcon size={28} /> Play!
-          </button>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 safe-area-top safe-area-bottom">
+        {/* Main card container - centered cohesive unit */}
+        <div className="w-full max-w-sm bg-white/60 backdrop-blur-sm rounded-3xl shadow-2xl p-6 space-y-6">
+          {/* Title section */}
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-amber-800 mb-2 animate-bounce-slow flex items-center justify-center gap-2">
+              <CalculatorIcon size={36} /> Math Quest! <GamepadIcon size={36} />
+            </h1>
+            <p className="text-lg text-amber-700">Catch Pokemon by solving math!</p>
+          </div>
           
-          <button
-            onClick={() => setGameState('collection')}
-            className="w-full py-5 px-8 bg-gradient-to-r from-purple-400 to-purple-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
-          >
-            <BackpackIcon size={24} /> My Pokemon ({collectedPokemon.length}/{POKEMON_LIST.length})
-          </button>
+          {/* Pokemon showcase - bigger sprites */}
+          <div className="flex justify-center gap-3 animate-float py-4 bg-gradient-to-r from-amber-100/50 to-yellow-100/50 rounded-2xl">
+            {[25, 4, 7, 1].map((id, i) => (
+              <Image
+                key={id}
+                src={getSpriteUrl(id)}
+                alt="Pokemon"
+                width={96}
+                height={96}
+                className="drop-shadow-lg hover:scale-110 transition-transform"
+                style={{ animationDelay: `${i * 0.2}s` }}
+                unoptimized
+              />
+            ))}
+          </div>
           
-          <div className="bg-white/50 rounded-2xl p-5">
-            <p className="text-amber-800 font-bold mb-3">Difficulty:</p>
+          {/* Action buttons */}
+          <div className="space-y-4">
+            <button
+              onClick={startGame}
+              className="w-full py-5 px-8 bg-gradient-to-r from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
+            >
+              <PlayIcon size={28} /> Play!
+            </button>
+            
+            <button
+              onClick={() => setGameState('collection')}
+              className="w-full py-4 px-8 bg-gradient-to-r from-purple-400 to-purple-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3"
+            >
+              <BackpackIcon size={24} /> My Pokemon ({collectedPokemon.length}/{POKEMON_LIST.length})
+            </button>
+          </div>
+          
+          {/* Difficulty selector */}
+          <div className="bg-white/70 rounded-2xl p-4">
+            <p className="text-amber-800 font-bold mb-3 text-center">Difficulty:</p>
             <div className="flex gap-2">
               {[
                 { level: 1, label: 'Easy', desc: 'Numbers 1-5' },
@@ -371,9 +375,9 @@ export default function Home() {
                 <button
                   key={level}
                   onClick={() => setDifficulty(level)}
-                  className={`flex-1 py-4 rounded-xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 ${
+                  className={`flex-1 py-3 rounded-xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 ${
                     difficulty === level
-                      ? 'bg-amber-500 text-white scale-105'
+                      ? 'bg-amber-500 text-white scale-105 shadow-md'
                       : 'bg-white text-amber-700 hover:bg-amber-100'
                   }`}
                 >
@@ -387,15 +391,16 @@ export default function Home() {
               ))}
             </div>
             <p className="text-sm text-amber-600 mt-3 text-center">
-              {difficulty === 1 && 'Easy: Numbers 1-5'}
-              {difficulty === 2 && 'Medium: Numbers 1-10'}
-              {difficulty === 3 && 'Hard: Numbers 1-20'}
+              {difficulty === 1 && 'Numbers 1-5'}
+              {difficulty === 2 && 'Numbers 1-10, with subtraction!'}
+              {difficulty === 3 && 'Numbers 1-20, challenge mode!'}
             </p>
           </div>
           
+          {/* Score display */}
           {score > 0 && (
-            <p className="text-amber-700 font-bold flex items-center justify-center gap-2 pt-2">
-              <StarIcon size={20} /> Total Stars: {score}
+            <p className="text-amber-700 font-bold flex items-center justify-center gap-2 text-lg">
+              <StarIcon size={24} /> Total Stars: {score}
             </p>
           )}
         </div>
@@ -499,33 +504,43 @@ export default function Home() {
   }
 
   // Playing Screen
+  // Encouraging messages for below the answers
+  const encouragements = [
+    "You've got this!",
+    "Math superstar!",
+    "Keep going!",
+    "You're doing great!",
+    "Almost there!",
+  ];
+  const encouragement = encouragements[streak % encouragements.length];
+
   return (
-    <div className="min-h-screen flex flex-col p-4 pb-8 safe-area-top safe-area-bottom">
+    <div className="min-h-screen flex flex-col p-4 safe-area-top safe-area-bottom">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setGameState('menu')}
-          className="py-2 px-4 bg-white/70 rounded-xl text-amber-800 font-bold"
+          className="py-2 px-4 bg-white/70 rounded-xl text-amber-800 font-bold text-lg"
         >
           ← Menu
         </button>
-        <div className="flex items-center gap-4">
-          <span className="text-lg font-bold text-amber-800 flex items-center gap-1">
-            <StarIcon size={20} /> {score}
+        <div className="flex items-center gap-6">
+          <span className="text-xl font-bold text-amber-800 flex items-center gap-1">
+            <StarIcon size={24} /> {score}
           </span>
-          <span className="text-lg font-bold text-amber-800 flex items-center gap-1">
-            <FireIcon size={20} /> {streak}
+          <span className="text-xl font-bold text-amber-800 flex items-center gap-1">
+            <FireIcon size={24} /> {streak}
           </span>
         </div>
       </div>
       
       {/* Progress to next Pokemon */}
-      <div className="mb-2">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-sm text-amber-700">Next Pokemon:</span>
+      <div className="mb-6">
+        <div className="flex items-center justify-center gap-3">
+          <span className="text-base text-amber-700 font-medium">Next Pokemon:</span>
           {[0, 1, 2].map((i) => (
             <span key={i} className={i < (streak % 3) ? 'opacity-100' : 'opacity-30'}>
-              <StarIcon size={24} filled={i < (streak % 3)} />
+              <StarIcon size={28} filled={i < (streak % 3)} />
             </span>
           ))}
         </div>
@@ -533,15 +548,16 @@ export default function Home() {
       
       {/* Problem - flex-1 to expand and fill space */}
       {problem && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-8">
-          <div className={`bg-white rounded-3xl shadow-xl px-10 py-12 ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
+        <div className="flex-1 flex flex-col items-center justify-between py-4">
+          {/* Problem card with more presence */}
+          <div className={`problem-card bg-white rounded-3xl shadow-2xl px-10 py-12 ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
             <div className="text-6xl sm:text-7xl font-bold text-center text-gray-800">
               {problem.num1} {problem.operator} {problem.num2} = ?
             </div>
           </div>
           
-          {/* Answer Choices - Larger buttons with more gap */}
-          <div className="grid grid-cols-2 gap-5 w-full max-w-sm px-2">
+          {/* Answer Choices - Bigger, full width buttons */}
+          <div className="grid grid-cols-2 gap-5 w-full max-w-sm mt-8">
             {choices.map((choice, i) => {
               const isSelected = selectedAnswer === choice;
               const isCorrectAnswer = choice === problem.answer;
@@ -554,7 +570,7 @@ export default function Home() {
                   key={i}
                   onClick={() => checkAnswer(choice)}
                   disabled={selectedAnswer !== null}
-                  className={`py-8 text-4xl font-bold rounded-2xl shadow-lg transition-all ${
+                  className={`w-full py-8 text-5xl font-bold rounded-2xl shadow-lg transition-all ${
                     showCorrect
                       ? 'bg-green-400 text-white'
                       : showWrong
@@ -568,11 +584,26 @@ export default function Home() {
             })}
           </div>
           
-          {gameState === 'correct' && (
-            <div className="text-4xl animate-pop flex items-center gap-2">
-              <PartyIcon size={40} /> Great job!
-            </div>
-          )}
+          {/* Fun element below answers */}
+          <div className="flex flex-col items-center gap-2 mt-8">
+            {gameState === 'correct' ? (
+              <div className="text-3xl animate-pop flex items-center gap-2">
+                <PartyIcon size={36} /> Great job! <PartyIcon size={36} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 bg-white/60 rounded-2xl px-8 py-4 shadow-md">
+                <Image
+                  src={getSpriteUrl(25)}
+                  alt="Pikachu cheering"
+                  width={56}
+                  height={56}
+                  className="animate-bounce-slow"
+                  unoptimized
+                />
+                <span className="text-xl text-amber-700 font-bold">{encouragement}</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -129,3 +129,12 @@ input, select, textarea {
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Problem card with more presence */
+.problem-card {
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
+    0 20px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 4px rgba(251, 191, 36, 0.3);
+  border: 2px solid rgba(251, 191, 36, 0.4);
+}
