@@ -490,20 +490,21 @@ export default function Home() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 safe-area-top safe-area-bottom">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-amber-800 mb-4 flex items-center justify-center gap-2">
+          <h2 className="text-3xl font-bold text-amber-800 mb-6 flex items-center justify-center gap-2">
             <PartyIcon size={32} /> New Pokemon! <PartyIcon size={32} />
           </h2>
           
+          {/* Pokemon showcase - bigger sprite, smaller circle ratio */}
           <div
-            className="w-40 h-40 rounded-full flex items-center justify-center mx-auto mb-4 animate-celebrate shadow-2xl"
+            className="w-48 h-48 rounded-full flex items-center justify-center mx-auto mb-6 animate-celebrate shadow-2xl border-4 border-white/50"
             style={{ backgroundColor: newPokemon.color }}
           >
             <Image
               src={getSpriteUrl(newPokemon.id)}
               alt={newPokemon.name}
-              width={120}
-              height={120}
-              className="drop-shadow-lg"
+              width={160}
+              height={160}
+              className="drop-shadow-lg scale-150"
               unoptimized
             />
           </div>
