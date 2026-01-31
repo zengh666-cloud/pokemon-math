@@ -488,37 +488,36 @@ export default function Home() {
   // New Pokemon Screen
   if (gameState === 'newPokemon' && newPokemon) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 safe-area-top safe-area-bottom">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-amber-800 mb-6 flex items-center justify-center gap-2">
-            <PartyIcon size={32} /> New Pokemon! <PartyIcon size={32} />
-          </h2>
-          
-          {/* Pokemon showcase - bigger sprite in circle */}
-          <div
-            className="w-36 h-36 rounded-full flex items-center justify-center mx-auto mb-6 animate-celebrate shadow-2xl border-4 border-white/50 overflow-hidden"
-            style={{ backgroundColor: newPokemon.color }}
-          >
-            <Image
-              src={getSpriteUrl(newPokemon.id)}
-              alt={newPokemon.name}
-              width={96}
-              height={96}
-              className="drop-shadow-lg scale-125"
-              unoptimized
-            />
-          </div>
-          
-          <h3 className="text-4xl font-bold text-gray-800 mb-2">{newPokemon.name}</h3>
-          <p className="text-xl text-amber-700 mb-8">joined your team!</p>
-          
-          <button
-            onClick={continueAfterPokemon}
-            className="py-4 px-12 bg-gradient-to-r from-green-400 to-green-500 text-white text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-3 mx-auto"
-          >
-            Keep Playing! <RocketIcon size={28} />
-          </button>
+      <div className="min-h-screen flex flex-col items-center justify-center p-8 safe-area-top safe-area-bottom">
+        {/* Celebration header */}
+        <p className="text-2xl font-bold text-amber-700 mb-8">⭐ New Pokemon! ⭐</p>
+        
+        {/* Pokemon showcase - centered circle with sprite */}
+        <div
+          className="w-32 h-32 rounded-full flex items-center justify-center mb-6 shadow-xl animate-celebrate"
+          style={{ backgroundColor: newPokemon.color }}
+        >
+          <Image
+            src={getSpriteUrl(newPokemon.id)}
+            alt={newPokemon.name}
+            width={80}
+            height={80}
+            className="drop-shadow-md"
+            unoptimized
+          />
         </div>
+        
+        {/* Pokemon name */}
+        <h2 className="text-3xl font-bold text-gray-800 mb-1">{newPokemon.name}</h2>
+        <p className="text-lg text-amber-600 mb-10">joined your team!</p>
+        
+        {/* Continue button - large touch target */}
+        <button
+          onClick={continueAfterPokemon}
+          className="w-full max-w-xs h-14 bg-gradient-to-r from-green-400 to-green-500 text-white text-xl font-bold rounded-2xl shadow-lg active:scale-95 transition-transform"
+        >
+          Keep Playing! 🚀
+        </button>
       </div>
     );
   }
@@ -539,123 +538,109 @@ export default function Home() {
   const streakSize = Math.min(24 + streak * 2, 40); // Grows with streak, max 40px
 
   return (
-    <div className="min-h-screen flex flex-col p-4 safe-area-top safe-area-bottom relative">
-      {/* Background decorations */}
-      <div className="bg-decorations" />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3 relative z-10">
+    <div className="min-h-screen flex flex-col safe-area-top safe-area-bottom">
+      {/* Header - compact, clean */}
+      <div className="flex items-center justify-between px-4 py-3">
         <button
           onClick={() => setGameState('menu')}
-          className="py-2 px-4 bg-white/70 rounded-xl text-amber-800 font-bold text-lg"
+          className="w-12 h-12 flex items-center justify-center bg-white/80 rounded-full text-amber-800 font-bold text-xl shadow-md active:scale-95"
         >
-          ← Menu
+          ←
         </button>
-        <div className="flex items-center gap-4">
-          <span className="text-xl font-bold text-amber-800 flex items-center gap-1 relative">
-            <StarIcon size={24} /> {score}
-            {/* Score pop animation */}
+        
+        {/* Stats - right aligned */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-white/80 px-3 py-2 rounded-full shadow-md relative">
+            <StarIcon size={20} />
+            <span className="text-lg font-bold text-amber-800">{score}</span>
             {showScorePop && (
-              <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-green-500 font-bold text-lg animate-score-pop">
+              <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-green-500 font-bold animate-score-pop">
                 +{earnedPoints}
               </span>
             )}
-          </span>
-          <span className={`streak-flame ${streak >= 5 ? 'streak-hot' : ''}`} style={{ fontSize: `${streakSize}px` }}>
-            <FireIcon size={streakSize} />
-            <span className="text-amber-800 font-bold" style={{ fontSize: `${Math.min(20 + streak, 28)}px` }}>
-              {streak}
-            </span>
-          </span>
-        </div>
-      </div>
-      
-      {/* Progress bar with Pokemon preview */}
-      <div className="mb-4 relative z-10">
-        <div className="flex items-center gap-3 justify-center mx-auto">
-          <span className="text-sm text-amber-700 font-medium">Next:</span>
-          <div className="w-[180px]">
-            <div className="progress-bar-container">
-              <div 
-                className="progress-bar-fill" 
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
           </div>
-          {nextPokemon ? (
-            <Image
-              src={getSpriteUrl(nextPokemon.id)}
-              alt="Next Pokemon"
-              width={36}
-              height={36}
-              className="pokemon-silhouette"
-              unoptimized
-            />
-          ) : (
-            <span className="text-2xl">🏆</span>
+          {streak > 0 && (
+            <div className="flex items-center gap-1 bg-orange-100 px-3 py-2 rounded-full shadow-md">
+              <FireIcon size={20} />
+              <span className="text-lg font-bold text-orange-600">{streak}</span>
+            </div>
           )}
         </div>
       </div>
       
-      {/* Problem - flex-1 centered as cohesive unit */}
-      {problem && (
-        <div className="flex-1 flex flex-col items-center justify-center relative z-10">
-          <div className="flex flex-col items-center gap-6 w-full max-w-sm px-2">
-            {/* Problem card with more presence */}
-            <div className={`problem-card bg-white rounded-3xl shadow-2xl px-8 py-8 w-full ${isWrong ? 'animate-wiggle bg-red-100' : ''} ${gameState === 'correct' ? 'bg-green-100' : ''}`}>
-              <div className="text-5xl sm:text-6xl font-bold text-center text-gray-800">
-                {problem.num1} {problem.operator} {problem.num2} = ?
+      {/* Progress to next Pokemon - centered */}
+      <div className="px-4 py-2">
+        <div className="flex items-center justify-center gap-2">
+          {nextPokemon ? (
+            <>
+              <div className="w-40 h-2 bg-white/60 rounded-full overflow-hidden shadow-inner">
+                <div 
+                  className="h-full bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
-            </div>
-            
-            {/* Answer Choices - Colorful pastel buttons */}
-            <div className="grid grid-cols-2 gap-4 w-full">
-              {choices.map((choice, i) => {
-                const isSelected = selectedAnswer === choice;
-                const isCorrectAnswer = choice === problem.answer;
-                const showCorrect = selectedAnswer !== null && isCorrectAnswer;
-                const showWrong = isSelected && !isCorrectAnswer;
-                const isCorrectPop = correctAnswer === choice;
-                
-                return (
-                  <button
-                    key={i}
-                    onClick={() => checkAnswer(choice)}
-                    disabled={selectedAnswer !== null}
-                    className={`w-full py-6 text-4xl font-bold rounded-2xl shadow-lg transition-all ${
-                      showCorrect
-                        ? 'bg-green-400 text-white border-green-500'
-                        : showWrong
-                        ? 'bg-red-400 text-white border-red-500'
-                        : `${buttonColors[i]} text-gray-700 active:scale-95`
-                    } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
-                  >
-                    {choice}
-                  </button>
-                );
-              })}
-            </div>
-            
-            {/* Fun element below answers */}
-            <div className="flex flex-col items-center">
-              {gameState === 'correct' ? (
-                <div className="text-2xl animate-pop flex items-center gap-2">
-                  <PartyIcon size={32} /> Great job! <PartyIcon size={32} />
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 bg-white/60 rounded-2xl px-5 py-3 shadow-md">
-                  <Image
-                    src={getSpriteUrl(25)}
-                    alt="Pikachu cheering"
-                    width={48}
-                    height={48}
-                    className="animate-bounce-slow"
-                    unoptimized
-                  />
-                  <span className="text-lg text-amber-700 font-bold">{encouragement}</span>
-                </div>
-              )}
-            </div>
+              <Image
+                src={getSpriteUrl(nextPokemon.id)}
+                alt="Next Pokemon"
+                width={32}
+                height={32}
+                className="opacity-50"
+                unoptimized
+              />
+            </>
+          ) : (
+            <span className="text-amber-700 font-medium">All caught! 🏆</span>
+          )}
+        </div>
+      </div>
+      
+      {/* Main game area - centered */}
+      {problem && (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
+          {/* Problem card */}
+          <div className={`w-full max-w-xs bg-white rounded-3xl shadow-xl p-6 mb-6 ${isWrong ? 'animate-wiggle bg-red-50' : ''} ${gameState === 'correct' ? 'bg-green-50' : ''}`}>
+            <p className="text-5xl font-bold text-center text-gray-800">
+              {problem.num1} {problem.operator} {problem.num2} = ?
+            </p>
+          </div>
+          
+          {/* Answer grid - 2x2, large touch targets */}
+          <div className="w-full max-w-xs grid grid-cols-2 gap-3 mb-6">
+            {choices.map((choice, i) => {
+              const isSelected = selectedAnswer === choice;
+              const isCorrectAnswer = choice === problem.answer;
+              const showCorrect = selectedAnswer !== null && isCorrectAnswer;
+              const showWrong = isSelected && !isCorrectAnswer;
+              const isCorrectPop = correctAnswer === choice;
+              
+              return (
+                <button
+                  key={i}
+                  onClick={() => checkAnswer(choice)}
+                  disabled={selectedAnswer !== null}
+                  className={`h-20 text-3xl font-bold rounded-2xl shadow-md transition-all ${
+                    showCorrect
+                      ? 'bg-green-400 text-white'
+                      : showWrong
+                      ? 'bg-red-400 text-white'
+                      : `${buttonColors[i]} text-gray-700 active:scale-95`
+                  } ${isCorrectPop ? 'animate-correct-pop' : ''}`}
+                >
+                  {choice}
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Feedback area */}
+          <div className="h-16 flex items-center justify-center">
+            {gameState === 'correct' ? (
+              <p className="text-xl font-bold text-green-600 animate-pop">
+                ⭐ Great job! ⭐
+              </p>
+            ) : (
+              <p className="text-amber-600 font-medium">{encouragement}</p>
+            )}
           </div>
         </div>
       )}
